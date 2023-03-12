@@ -1,0 +1,10 @@
+﻿@model ModalFooter
+<div class="modal-footer">
+    <button data-dismiss="modal" id="@Model.CancelButtonID" class="btn btn-default" type="button">@Model.CancelButtonText</button>
+    @if (!Model.OnlyCancelButton)
+    {
+        <button class="btn @Model.SubmitButtonColorClass" id="@Model.SubmitButtonID" type="@Model.SubmitButtonType.ToString()">
+            @Model.SubmitButtonText
+        </button>
+    }
+</div>

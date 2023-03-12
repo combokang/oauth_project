@@ -1,0 +1,110 @@
+﻿@using MiddleOffice.Entities.ViewModels.Sso
+@model IEnumerable<UserRoleVM>
+
+@{
+    var user = (MiddleOffice.Entities.Models.Sso.User)ViewBag.User;
+    ViewData["Title"] = $"使用者角色-{user.Name}";
+    var modalID = "project-modal";
+    var areaModalID = "project-modal-label";
+}
+
+@section css{
+    <link href="~/lib/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">首頁</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Sso" asp-action="User">使用者</a></li>
+                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">列表</h3>
+                    <div class="card-tools">
+                        <div class="btn-group">
+                            <a data-toggle="modal" asp-action="EditUserRole" asp-route-userid="@user.Id" data-target="#@modalID" class="btn btn-warning btn-xs">
+                                <i class="far fa-edit"></i>  編輯
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="dataTables_wrapper dt-bootstrap4">
+                        <div class="row">
+                            <div class="col-12">
+                                <p>修改者: @Model.FirstOrDefault()?.Creator</p>
+                                <p>修改時間: @Model.FirstOrDefault()?.CreateTime?.ToString("yyyy/MM/dd HH:mm:ss")</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table id="userRole_table" class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:61px;"></th>
+                                            <th>專案名稱</th>
+                                            <th>角色名稱</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model)
+                                        {
+                                            <tr>
+                                                <td class="text-center">
+                                                    @if (item.Checked)
+                                                    {
+                                                        <i class="fas fa-check"></i>
+                                                    }
+                                                </td>
+                                                <td>@item.ProjectName</td>
+                                                <td>@item.RoleName</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@await Html.PartialAsync("_Modal", new Modal
+{
+    ID = modalID,
+    AreaLabelID = areaModalID,
+    Size = ModalSize.Large
+})
+
+@section Scripts{
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables/js/dataTables.bootstrap4.min.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ModalScriptsInit", modalID);}
+    <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script>
+        $(function () {
+
+
+
+
+        });
+    </script>
+}

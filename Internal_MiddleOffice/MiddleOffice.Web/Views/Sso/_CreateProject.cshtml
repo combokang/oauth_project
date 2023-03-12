@@ -1,0 +1,76 @@
+﻿@model MiddleOffice.Web.Bindings.Sso.Projects.CreateProjectBinding
+<form asp-action="CreateProject" id="create_project_form"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-begin="begin"
+      data-ajax-success="success"
+      data-ajax-failure="failure"
+      data-ajax-complete="complete"
+      method="POST">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader() { Heading = "新增專案" })
+    <div class="modal-body form-horizontal">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Domain" class="control-label"></label>
+                    <input asp-for="Domain" class="form-control" />
+                    <span asp-validation-for="Domain" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="CallbackUrls" class="control-label"></label>
+                    <textarea asp-for="CallbackUrls" class="form-control" rows="5"></textarea>
+                    <small id="emailHelp" class="form-text text-danger">注意:請以分號作分隔</small>
+                    <span asp-validation-for="CallbackUrls" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+<div class="overlay" style="display:none;">
+    <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+</div>
+
+<script>
+    $.validator.unobtrusive.parse('#create_project_form');
+
+    begin = function () {
+        $(".overlay").toggle();
+    };
+
+    success = function (data) {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: '新增成功',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            timer: 1500,
+            timerProgressBar: true
+        }).then((result) => {
+            location.reload();
+        });
+    };
+
+    failure = function (xhr, status, error) {
+        if (xhr.status == 400) {
+            $.each(xhr.responseJSON.formErrors, function () {
+                $("[data-valmsg-for='" + this.key + "']").html(this.errors.join());
+            });
+        }
+
+        if (xhr.status == 500) {
+            window.location = "@Url.Action("InternalServerErrorPage", "Error")";
+        }
+    };
+
+    complete = function (xhr) {
+        $(".overlay").toggle();
+    };
+</script>

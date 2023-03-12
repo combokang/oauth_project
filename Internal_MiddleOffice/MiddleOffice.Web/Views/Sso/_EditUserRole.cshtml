@@ -1,0 +1,83 @@
+﻿@model MiddleOffice.Web.Bindings.Sso.UserRoles.EditUserRoleBinding
+<form asp-action="EditUserRole" id="edit_userRole_form"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-begin="begin"
+      data-ajax-success="success"
+      data-ajax-failure="failure"
+      data-ajax-complete="complete"
+      method="POST">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader() { Heading = $"編輯使用者角色-{Model.UserName}" })
+
+    <div class="modal-body form-horizontal">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="UserId" />
+        <div class="row">
+            <table class="table table-bordered" id="projectTable">
+                <thead>
+                    <tr>
+                        <th style="width:61px;"></th>
+                        <th>專案名稱</th>
+                        <th>角色名稱</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.UserRoles.Count(); i++)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                @Html.HiddenFor(model => model.UserRoles[i].RoleId)
+                                @Html.CheckBoxFor(model => model.UserRoles[i].Checked)
+                                @Html.ValidationMessageFor(model => model.UserRoles[i].Checked, "", new { @class = "text-danger" })
+                            </td>
+                            <td>@Model.UserRoles[i].ProjectName</td>
+                            <td>@Model.UserRoles[i].RoleName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+<div class="overlay" style="display:none;">
+    <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+</div>
+
+<script>
+    $.validator.unobtrusive.parse('#edit_userRole_form');
+
+    begin = function () {
+        $(".overlay").toggle();
+    };
+
+    success = function (data) {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: '修改成功',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            timer: 1500,
+            timerProgressBar: true
+        }).then((result) => {
+            location.reload();
+        });
+    };
+
+    failure = function (xhr, status, error) {
+        if (xhr.status == 400) {
+            $.each(xhr.responseJSON.formErrors, function () {
+                $("[data-valmsg-for='" + this.key + "']").html(this.errors.join());
+            });
+        }
+
+        if (xhr.status == 500) {
+            window.location = "@Url.Action("InternalServerErrorPage", "Error")";
+        }
+    };
+
+    complete = function (xhr) {
+        $(".overlay").toggle();
+    };
+</script>

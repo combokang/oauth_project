@@ -1,0 +1,162 @@
+﻿@using MiddleOffice.Entities.ViewModels.Sso
+
+@{
+    ViewData["Title"] = "使用者列表";
+    var modalID = "user-modal";
+    var areaModalID = "user-modal-label";
+}
+
+@section css{
+    <link href="~/lib/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>@ViewData["Title"]</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">首頁</a></li>
+                    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-success">
+                <div class="card-header">
+                    <h3 class="card-title">查詢</h3>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="Id">帳號</label>
+                        <input type="text" class="form-control" id="Id" placeholder="請輸入帳號">
+                    </div>
+                </div>
+                <div class="card-footer text-right">
+                    <button type="button" class="btn bg-purple btn-sm" id="export_button"><i class="fas fa-download"></i>&nbsp;匯出報表(.xlsx)</button>
+                    <button type="button" class="btn btn-success btn-sm" id="search_button"><i class="fas fa-search"></i>&nbsp;查詢</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">列表</h3>
+                    <div class="card-tools">
+                        <div class="btn-group">
+                            <a data-toggle="modal" asp-action="CreateUser" data-target="#@modalID" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i>  新增
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="dataTables_wrapper dt-bootstrap4">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table id="user_table" class="table table-bordered table-striped" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>@(Html.GetDisplayName<UserListVM, string>(x => x.Id))</th>
+                                            <th>@(Html.GetDisplayName<UserListVM, string>(x => x.Name))</th>
+                                            <th>專案角色</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<form asp-action="ExportUserRole" asp-controller="Sso" id="export_user_role_form" style="display: none;" method="POST">
+    <input type="hidden" name="Id">
+</form>
+
+@await Html.PartialAsync("_Modal", new Modal
+{
+    ID = modalID,
+    AreaLabelID = areaModalID,
+    Size = ModalSize.Large
+})
+
+@section Scripts{
+    <script src="~/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="~/lib/datatables/js/dataTables.bootstrap4.min.js"></script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ModalScriptsInit", modalID);}
+    <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+
+    <script>
+        $(function () {
+            var resultTable = $("#user_table").DataTable({
+                language: {
+                    url: "@Url.Content("~/plugins/datatables/i18n/Chinese-traditional.json")"
+                },
+                responsive: true,
+                lengthMenu: [[30, 50, 100], [30, 50, 100]],
+                filter: false,
+                ordering:false,
+                processing: true,
+                serverSide: true,
+                info: false,
+                ajax: {
+                    url: "@Url.Action("GetUserAll", "Sso")",
+                    type: "POST",
+                    dataType: "json",
+                    async: true,
+                    data: function (input) {
+                        var fields = ['Id'];
+                        for (var i = 0; i < fields.length; i++) {
+                            var field = fields[i];
+                            var value = $('#' + field).val();
+
+                            input[field] = value;
+                            $('#export_user_role_form > input[name="' + field + '"]').val(value);
+                        }
+                    }
+                },
+                columns: [
+                    { data: "Id" },
+                    { data: "Name" },
+                    {
+                        render: function (data, type, row) {
+                            return '<a href="/Sso/UserRole?userId=' + row.Id + '" class="btn btn-sm btn-warning mr-2">設定</a>';
+                        }
+                    },
+                    {
+                        render: function (data, type, row) {
+                            var html = '<a href="/Sso/UserDetail?id=' + row.Id + '" class="btn btn-sm btn-info mr-2" data-toggle="modal" data-target="#@modalID">檢視</a>';
+                            html += '<a href="/Sso/EditUser?id=' + row.Id + '" class="btn btn-sm btn-warning mr-2" data-toggle="modal" data-target="#@modalID">編輯</a>';
+                            html += '<a href="/Sso/DeleteUser?id=' + row.Id + '" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#@modalID">刪除</a>';
+
+                            return html;
+                        }
+                    }
+                ]
+            });
+
+            $("#search_button").click(function () {
+                resultTable.ajax.reload();
+            });
+
+            $('#export_button').click(function () {
+                $('#export_user_role_form').submit();
+                return false;
+            });
+        });
+    </script>
+}

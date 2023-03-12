@@ -1,0 +1,18 @@
+﻿@model string
+<script type="text/javascript">
+    $(function () {
+
+        $('#@Model').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var url = button.attr("href");
+            var modal = $(this);
+                        // note that this will replace the content of modal-content everytime the modal is opene
+            modal.find('.modal-content').load(url);
+        });
+
+        $('#@Model').on('hidden.bs.modal', function (e) {
+            $(this).find('.modal-content').empty();
+        })
+    });
+
+</script>

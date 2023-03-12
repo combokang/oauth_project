@@ -1,0 +1,53 @@
+﻿@model MiddleOffice.Entities.Models.Sso.Project
+
+<form>
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader() { Heading = "檢視專案" })
+    <div class="modal-body form-horizontal">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label asp-for="Id" class="control-label"></label>
+                    <input asp-for="Id" class="form-control" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Domain" class="control-label"></label>
+                    <input asp-for="Domain" class="form-control" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="CallbackUrls" class="control-label"></label>
+                    <textarea asp-for="CallbackUrls" rows="5" class="form-control" readonly="readonly"></textarea>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ClientId" class="control-label"></label>
+                    <input asp-for="ClientId" class="form-control" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ClientSecret" class="control-label"></label>
+                    <input asp-for="ClientSecret" class="form-control" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Creator" class="control-label"></label>
+                    <input asp-for="Creator" class="form-control" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="CreateTime" class="control-label"></label>
+                    <input asp-for="CreateTime" asp-format="{0:yyyy/MM/dd HH:mm:ss}" type="text" class="form-control" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Updater" class="control-label"></label>
+                    <input asp-for="Updater" class="form-control" readonly="readonly" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="UpdateTime" class="control-label"></label>
+                    <input asp-for="UpdateTime" asp-format="{0:yyyy/MM/dd HH:mm:ss}" type="text" class="form-control" readonly="readonly" />
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter() { OnlyCancelButton = true })
+</form>

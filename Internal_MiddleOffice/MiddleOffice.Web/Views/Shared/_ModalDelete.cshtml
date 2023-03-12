@@ -1,0 +1,10 @@
+﻿@model String
+@using (Html.BeginForm())
+{
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader { Heading = "刪除" })
+
+    <div class="modal-body form-horizontal">
+        確定刪除此筆資料 @Model?
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { SubmitButtonText = "確認", SubmitButtonColor = ModalFooterSubmitButtonColor.Danger })
+}

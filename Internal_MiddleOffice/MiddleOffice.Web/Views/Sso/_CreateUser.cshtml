@@ -1,0 +1,85 @@
+﻿@model MiddleOffice.Web.Bindings.Sso.Users.CreateUserBinding
+<form asp-action="CreateUser" id="create_user_form"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-begin="begin"
+      data-ajax-success="success"
+      data-ajax-failure="failure"
+      data-ajax-complete="complete"
+      method="POST">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader() { Heading = "新增使用者" })
+    <div class="modal-body form-horizontal">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label asp-for="Id" class="control-label"></label>
+                    <input asp-for="Id" class="form-control" />
+                    <span asp-validation-for="Id" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control"></input>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword" class="control-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control"></input>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+<div class="overlay" style="display:none;">
+    <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+</div>
+
+<script>
+    $.validator.unobtrusive.parse('#create_user_form');
+
+    begin = function () {
+        $(".overlay").toggle();
+    };
+
+    success = function (data) {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: '新增成功',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            timer: 1500,
+            timerProgressBar: true
+        }).then((result) => {
+            location.reload();
+        });
+    };
+
+    failure = function (xhr, status, error) {
+        if (xhr.status == 400) {
+            $.each(xhr.responseJSON.formErrors, function () {
+                $("[data-valmsg-for='" + this.key + "']").html(this.errors.join());
+            });
+        }
+
+        if (xhr.status == 500) {
+            window.location = "@Url.Action("InternalServerErrorPage", "Error")";
+        }
+    };
+
+    complete = function (xhr) {
+        $(".overlay").toggle();
+    };
+</script>

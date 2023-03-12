@@ -1,0 +1,78 @@
+﻿@model MiddleOffice.Web.Bindings.Sso.Permissions.EditPermissionBinding
+<form asp-action="EditPermission" id="edit_permission_form"
+      data-ajax="true"
+      data-ajax-method="POST"
+      data-ajax-begin="begin"
+      data-ajax-success="success"
+      data-ajax-failure="failure"
+      data-ajax-complete="complete"
+      method="POST">
+    @await Html.PartialAsync("_ModalHeader", new ModalHeader() { Heading = "編輯權限" })
+
+    <div class="modal-body form-horizontal">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <label asp-for="CandidateKey" class="control-label"></label>
+                    <input asp-for="CandidateKey" class="form-control" />
+                    <span asp-validation-for="CandidateKey" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @await Html.PartialAsync("_ModalFooter", new ModalFooter { })
+</form>
+<div class="overlay" style="display:none;">
+    <i class="fas fa-2x fa-sync-alt fa-spin"></i>
+</div>
+
+<script>
+    $.validator.unobtrusive.parse('#edit_permission_form');
+
+    begin = function () {
+        $(".overlay").toggle();
+    };
+
+    success = function (data) {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: '修改成功',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            timer: 1500,
+            timerProgressBar: true
+        }).then((result) => {
+            location.reload();
+        });
+    };
+
+    failure = function (xhr, status, error) {
+        if (xhr.status == 400) {
+            $.each(xhr.responseJSON.formErrors, function () {
+                $("[data-valmsg-for='" + this.key + "']").html(this.errors.join());
+            });
+        }
+
+        if (xhr.status == 500) {
+            window.location = "@Url.Action("InternalServerErrorPage", "Error")";
+        }
+    };
+
+    complete = function (xhr) {
+        $(".overlay").toggle();
+    };
+</script>
